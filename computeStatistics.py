@@ -3,6 +3,7 @@ sys -> To get parameters from terminal
 os -> To manage files, creation and deletion
 time -> To manage start and end time to measure execution
 '''
+# pylint: disable=invalid-name
 import sys
 import os
 import time
@@ -31,10 +32,13 @@ def get_variance(lst, mean):
     item_minus_mean = [(element - mean)**2 for element in lst]
     return sum(item_minus_mean)/(n-1)
 
-def get_std(variance):
+def get_std(lst, mean):
     '''
     Esta función calcula la desviación estandar del conjunto de datos
     '''
+    n = len(lst)
+    item_minus_mean = [(element - mean)**2 for element in lst]
+    variance = sum(item_minus_mean)/(n)
     return variance**0.5
 
 def get_median(lst):
@@ -61,12 +65,16 @@ def get_mode(lst):
     return max(dct_freq.items(), key=lambda x: x[1])
 
 def manage_list(lst):
+    '''
+    Esta función convierte datos leidos en numeros y no toma en cuenta cuando son 
+    texto o no numerico tipo de dato
+    '''
     new_list = []
     for element in lst:
         try:
             i = float(element)
             new_list.append(i)
-        except:
+        except ValueError:
             continue
     return new_list
 
@@ -77,7 +85,7 @@ def calc_statistics(lst):
     lst = manage_list(lst)
     mean = get_mean(lst)
     variance = get_variance(lst, mean)
-    std = get_std(variance)
+    std = get_std(lst, mean)
     median = get_median(lst)
     mode = get_mode(lst)
     print(f'Mean: {mean}')
@@ -123,7 +131,7 @@ def main():
         delete_final_file()
         write_info_file((mean, variance , std , median, mode, start_time, final_time))
         print('Fin de execución')
-    except IndexError:
+    except FileNotFoundError:
         print('No se encontró archivo. Debes ingresar un archivo para calcular estadísticas')
 
 if __name__=='__main__':
